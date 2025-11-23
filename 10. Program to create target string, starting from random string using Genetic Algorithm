@@ -1,0 +1,62 @@
+import random
+import string
+
+# Define parameters for the genetic algorithm
+TARGET = "HELLO WORLD"
+POP_SIZE = 100
+MUTATION_RATE = 0.01
+GENERATIONS = 1000
+
+def random_char():
+    """Return a random uppercase letter or space."""
+    return random.choice(string.ascii_uppercase + " ")
+
+def random_string(length):
+    """Generate a random string of given length."""
+    return ''.join(random_char() for _ in range(length))
+def fitness(individual):
+    """Calculate fitness score (how many characters match the target)."""
+    return sum(individual[i] == TARGET[i] for i in range(len(TARGET)))
+def crossover(parent1, parent2):
+    """Single-point crossover."""
+    point = random.randint(0, len(TARGET) - 1)
+    child = parent1[:point] + parent2[point:]
+    return child
+def mutate(individual):
+    """Randomly mutate characters with a small probability."""
+    new_chars = []
+    for ch in individual:
+        if random.random() < MUTATION_RATE:
+            new_chars.append(random_char())
+        else:
+            new_chars.append(ch)
+    return ''.join(new_chars)
+population = [random_string(len(TARGET)) for _ in range(POP_SIZE)]
+for generation in range(GENERATIONS):
+    # Evaluate fitness for each individual
+    scored_population = [(individual, fitness(individual)) for individual in population]
+
+    # Sort by fitness descending
+    scored_population.sort(key=lambda x: x[1], reverse=True)
+
+    best_individual, best_fitness = scored_population[0]
+    print(f"Generation {generation}: {best_individual} (Fitness: {best_fitness})")
+
+    if best_individual == TARGET:
+        print("\n🎯 Target reached!")
+        break
+    num_parents = POP_SIZE // 5
+    parents = [ind for ind, _ in scored_population[:num_parents]]
+
+    # Generate next generation
+    next_generation = []
+    while len(next_generation) < POP_SIZE:
+        parent1, parent2 = random.sample(parents, 2)
+        child = crossover(parent1, parent2)
+        child = mutate(child)
+        next_generation.append(child)
+
+    population = next_generation
+
+else:
+    print("\n❌ Target not reached within generation limit.")
