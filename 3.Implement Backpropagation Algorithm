@@ -1,0 +1,78 @@
+import numpy as np
+
+class NeuralNetwork:
+  def __init__(self, layers, alpha=0.1):
+    # layer: list of integers representing the number of nodes in each layer
+    # alpha learning rate
+    self.w=[]
+    self.layers = layers
+    self.alpha = alpha
+
+    # Initialize weights with small random values
+    for i in np.arange(0,len(layers)-2):
+      w=np.random.randn(layers[i]+1, layers[i+1]+1)
+      self.w.append(w/np.sqrt(layers[i]))
+    # Special case for output layer (no bias unit)
+    w=np.random.randn(layers[-2]+1,layers[-1])
+    self.w.append(w/np.sqrt(layers[-2]))
+
+  def sigmoid(self, x):
+    return 1.0 / (1 + np.exp(-x))
+
+  def sigmoid_deriv(self, x):
+    return x * (1 - x)
+
+  def fit(self, x, y, epochs=1000):
+    X = np.c_[x, np.ones((x.shape[0], 1))] # Add bias to input
+
+    for epoch in range(epochs):
+      for i in range(x.shape[0]):
+        A = [X[i]] # Store activations for each layer
+
+        # Forward propagation
+        for layer in np.arange(0, len(self.w)):
+          net = A[layer].dot(self.w[layer])
+          output = self.sigmoid(net)
+          A.append(output)
+
+        # Backpropagation
+        error = A[-1] - y[i] # Error at output layer
+        D = [error * self.sigmoid_deriv(A[-1])] # Delta for output layer
+
+        # Propagate errors backward
+        for layer in np.arange(len(self.w) -1, 0, -1):
+          delta = D[-1].dot(self.w[layer].T) * self.sigmoid_deriv(A[layer])
+          D.append(delta)
+        D = D[::-1] # Reverse deltas to match layer order
+
+        # Update weights
+        for layer in np.arange(0, len(self.w)):
+          self.w[layer] += -self.alpha * A[layer].reshape(-1, 1).dot(D[layer][np.newaxis, :])
+
+  def predict(self, X):
+    p = np.c_[X, np.ones((X.shape[0], 1))] # Add bias to input
+    for layer in np.arange(0, len(self.w)):
+      p = self.sigmoid(p.dot(self.w[layer]))
+    return p
+
+# Create XOR dataset
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+# Initialize and train the network
+nn = NeuralNetwork([2, 2, 1], alpha=0.5) # 2 input, 2 hiden, 1 output
+nn.fit(X, y, epochs=20000)
+
+# Make predictions and evaluate
+predictions = nn.predict(X)
+print("Predictions after training:")
+print(predictions)
+
+# Threshold predictions for binary classification
+binary_predictions = (predictions > 0.5).astype(int)
+print("\nBinary Predictions:")
+print(binary_predictions)
+
+# Calculate accuracy
+accuracy = np.mean(binary_predictions == y)
+print(f"\nAccuracy: {accuracy * 100:.2f}%")
