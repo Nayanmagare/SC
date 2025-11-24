@@ -1,0 +1,171 @@
+1)triangular
+
+x = 0:10;       
+a = 3; 
+b = 6; 
+c = 10;
+
+% Manual triangular membership function
+y = max(min((x-a)/(b-a), (c-x)/(c-b)), 0);
+
+plot(x, y);
+xlabel('triangular MF, p = x,[3,6,10]');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+
+2)trapezoidal
+
+x = 0:10;
+a = 1; 
+b = 4; 
+c = 6; 
+d = 9;
+
+% Manual trapezoidal membership function
+y = max(min(min((x-a)/(b-a), 1), (d-x)/(d-c)), 0);
+
+plot(x,y);
+xlabel('trapezoidal MF, p = (x,[1 4 6 9])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+3)sigmoidal
+
+x = 0:0.1:10;
+a = 1;
+c = 4;
+
+% Manual sigmoid membership function
+y = 1 ./ (1 + exp(-a * (x - c)));
+
+plot(x,y);
+xlabel('Sigmoidal MF, p = (x,[1,4])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+
+4)sigmoidal_2
+
+
+x = 0:0.1:10;
+a = 1;
+b = 4;
+
+y = zeros(size(x));
+
+for i = 1:length(x)
+    if x(i) <= a
+        y(i) = 0;
+    elseif x(i) <= (a + b) / 2
+        y(i) = 2 * ((x(i) - a) / (b - a))^2;
+    elseif x(i) < b
+        y(i) = 1 - 2 * ((b - x(i)) / (b - a))^2;
+    else
+        y(i) = 1;
+    end
+end
+
+plot(x, y);
+xlabel('S-shaped MF, p = (x,[1,4])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+
+5)gaussian
+
+
+x = 0:0.1:10;
+sigma1 = 1; 
+c1 = 4;
+sigma2 = 5;
+c2 = 7;
+
+y = zeros(size(x));
+mid = (c1 + c2) / 2;
+
+for i = 1:length(x)
+    if x(i) <= mid
+        y(i) = exp(-((x(i) - c1)^2) / (2 * sigma1^2));
+    else
+        y(i) = exp(-((x(i) - c2)^2) / (2 * sigma2^2));
+    end
+end
+
+plot(x, y);
+xlabel('Gaussian 2 MF, p = (x,[1,4,5,7])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+
+6)gaussian_2
+
+
+x = 0:0.1:10;
+sigma = 1;
+c = 4;
+
+% Manual Gaussian membership function
+y = exp(-((x - c).^2) / (2 * sigma^2));
+
+plot(x,y);
+xlabel('Gaussian MF, p = (x,[1,4])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+
+7)PI
+
+
+x = 0:0.1:10;
+a = 1; b = 4; c = 5; d = 7;
+
+y = zeros(size(x));
+
+for i = 1:length(x)
+    if x(i) <= a
+        y(i) = 0;
+    elseif x(i) <= (a+b)/2
+        y(i) = 2 * ((x(i) - a) / (b - a))^2;
+    elseif x(i) < b
+        y(i) = 1 - 2 * ((b - x(i)) / (b - a))^2;
+    elseif x(i) <= c
+        y(i) = 1;
+    elseif x(i) <= (c+d)/2
+        y(i) = 1 - 2 * ((x(i) - c) / (d - c))^2;
+    elseif x(i) < d
+        y(i) = 2 * ((d - x(i)) / (d - c))^2;
+    else
+        y(i) = 0;
+    end
+end
+
+plot(x, y);
+xlabel('PI MF, p = (x,[1,4,5,7])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
+
+
+8)bell
+
+
+x = 0:0.1:10;
+a = 1;
+b = 4;
+c = 7;
+
+% Manual generalized bell MF
+y = 1 ./ (1 + abs((x - c) ./ a).^(2 * b));
+
+plot(x, y);
+xlabel('Bell MF, p = (x,[1 4 7])');
+ylabel('Fuzziness');
+ylim([-0.05 1.05]);
+grid on;
